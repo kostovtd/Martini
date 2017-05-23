@@ -1,0 +1,4 @@
+rootProject.name = 'martini-root'
+
+include ':martini', ':martini-sample'
+
