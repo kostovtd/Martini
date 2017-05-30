@@ -1,6 +1,8 @@
 package com.kostovtd.martini;
 
 import android.content.Context;
+import android.content.IntentFilter;
+import android.telephony.SmsMessage;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -13,12 +15,15 @@ import java.util.List;
 public class Martini {
 
     private static final String TAG = Martini.class.getSimpleName();
+    private static final String BROADCAST = "android.provider.Telephony.SMS_RECEIVED";
 
 
     private static Martini singleton = null;
     private final Context context;
     private SmsListener smsListener;
     private List<String> gatewayList;
+    private SmsBroadcastReceiver smsBroadcastReceiver;
+
 
 
     private Martini(Context context) {
@@ -30,11 +35,11 @@ public class Martini {
      * The default way to obtain a {@link Martini} instance.
      */
     public static Martini with(Context context) {
-        if(context == null) {
+        if (context == null) {
             throw new IllegalArgumentException("context can NOT be NULL");
         }
 
-        if(singleton == null) {
+        if (singleton == null) {
             singleton = new Martini(context);
         }
 
@@ -43,7 +48,7 @@ public class Martini {
 
 
     public Martini setSmsListener(SmsListener smsListener) {
-        if(smsListener == null) {
+        if (smsListener == null) {
             throw new IllegalArgumentException("smsListener can not be NULL");
         }
 
@@ -55,15 +60,16 @@ public class Martini {
 
     /**
      * Register a gateway for receiving messages from.
+     *
      * @param gateway
      */
     public Martini addGateway(String gateway) {
-        if(Is.empty(gateway)) {
+        if (Is.empty(gateway)) {
             Log.i(TAG, "empty gateway");
             return singleton;
         }
 
-        if(gatewayList == null) {
+        if (gatewayList == null) {
             gatewayList = new ArrayList<>();
         }
 
@@ -76,19 +82,20 @@ public class Martini {
 
     /**
      * Register gateways for receiving messages from.
+     *
      * @param gateways
      */
     public Martini addGateways(String[] gateways) {
-        if(Is.empty(gateways)) {
+        if (Is.empty(gateways)) {
             Log.i(TAG, "empty gateways");
             return singleton;
         }
 
-        if(gatewayList == null) {
+        if (gatewayList == null) {
             gatewayList = new ArrayList<>();
         }
 
-        for(String gateway: gateways) {
+        for (String gateway : gateways) {
             Log.i(TAG, "included gateway: " + gateway);
             gatewayList.add(gateway);
         }
@@ -99,10 +106,11 @@ public class Martini {
 
     /**
      * Register gateways for receiving messages from.
+     *
      * @param gatewayList
      */
     public Martini addGateways(ArrayList<String> gatewayList) {
-        if(Is.empty(gatewayList)) {
+        if (Is.empty(gatewayList)) {
             Log.i(TAG, "empty gateways");
             return singleton;
         }
@@ -110,5 +118,32 @@ public class Martini {
         this.gatewayList = gatewayList;
 
         return singleton;
+    }
+
+
+    public void start() {
+        if(smsBroadcastReceiver == null) {
+            smsBroadcastReceiver = new SmsBroadcastReceiver();
+        }
+
+
+        smsBroadcastReceiver.setBroadcastListener(new BroadcastListener() {
+            @Override
+            public void onMessagesReceived(List<SmsMessage> smsMessageList) {
+
+            }
+        });
+
+
+        IntentFilter intentFilter = new IntentFilter(BROADCAST);
+
+        context.registerReceiver(smsBroadcastReceiver, intentFilter);
+    }
+
+
+    public void stop() {
+        if(smsBroadcastReceiver != null) {
+            context.unregisterReceiver(smsBroadcastReceiver);
+        }
     }
 }
