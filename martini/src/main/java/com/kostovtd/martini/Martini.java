@@ -144,7 +144,26 @@ public class Martini {
         smsBroadcastReceiver.setBroadcastListener(new BroadcastListener() {
             @Override
             public void onMessagesReceived(List<SmsMessage> smsMessageList) {
+                for(SmsMessage smsMessage : smsMessageList) {
+                    String smsNumber = smsMessage.getDisplayOriginatingAddress();
+                    if(!Is.empty(smsNumber)) {
+                        Log.d(TAG, "onMessagesReceived: " + smsNumber);
 
+                        boolean isKnownGateway = isKnownGateway(smsNumber);
+
+                        if(!isKnownGateway) {
+                            Log.i(TAG, "onMessagesReceived: not interesting number");
+                            continue;
+                        }
+
+                        if(smsListener == null) {
+                            Log.i(TAG, "onMessagesReceived: smsListener is NULL");
+                            continue;
+                        }
+
+                        smsListener.onSmsReceived(smsMessage);
+                    }
+                }
             }
         });
 
@@ -164,5 +183,23 @@ public class Martini {
         if(smsBroadcastReceiver != null) {
             context.unregisterReceiver(smsBroadcastReceiver);
         }
+    }
+
+
+    /**
+     * Determine if the given number is part of the gateways
+     * for which we care about.
+     * @param smsNumber
+     * @return TRUE if the number is part of important gateways of us.
+     * FALSE otherwise.
+     */
+    private boolean isKnownGateway(String smsNumber) {
+        for(String gateway : gatewayList) {
+            if(gateway.trim().toLowerCase().equals(smsNumber.trim().toLowerCase())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
