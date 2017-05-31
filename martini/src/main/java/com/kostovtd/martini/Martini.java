@@ -35,6 +35,8 @@ public class Martini {
      * The default way to obtain a {@link Martini} instance.
      */
     public static Martini with(Context context) {
+        Log.d(TAG, "with: hit");
+
         if (context == null) {
             throw new IllegalArgumentException("context can NOT be NULL");
         }
@@ -64,6 +66,8 @@ public class Martini {
      * @param gateway
      */
     public Martini addGateway(String gateway) {
+        Log.d(TAG, "addGateway: hit");
+
         if (Is.empty(gateway)) {
             Log.i(TAG, "empty gateway");
             return singleton;
@@ -86,6 +90,8 @@ public class Martini {
      * @param gateways
      */
     public Martini addGateways(String[] gateways) {
+        Log.d(TAG, "addGateways: hit");
+
         if (Is.empty(gateways)) {
             Log.i(TAG, "empty gateways");
             return singleton;
@@ -110,6 +116,8 @@ public class Martini {
      * @param gatewayList
      */
     public Martini addGateways(ArrayList<String> gatewayList) {
+        Log.d(TAG, "addGateways: hit");
+
         if (Is.empty(gatewayList)) {
             Log.i(TAG, "empty gateways");
             return singleton;
@@ -121,7 +129,13 @@ public class Martini {
     }
 
 
+    /**
+     * Start a {@link android.content.BroadcastReceiver} for
+     * listening for each incoming SMS.
+     */
     public void start() {
+        Log.d(TAG, "start: hit");
+
         if(smsBroadcastReceiver == null) {
             smsBroadcastReceiver = new SmsBroadcastReceiver();
         }
@@ -141,7 +155,12 @@ public class Martini {
     }
 
 
+    /**
+     * Stop a previously started {@link android.content.BroadcastReceiver}
+     */
     public void stop() {
+        Log.d(TAG, "stop: hit");
+
         if(smsBroadcastReceiver != null) {
             context.unregisterReceiver(smsBroadcastReceiver);
         }

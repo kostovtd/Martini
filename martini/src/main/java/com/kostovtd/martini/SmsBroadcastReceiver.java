@@ -25,6 +25,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive: hit");
+
         if (intent != null) {
             final Bundle bundle = intent.getExtras();
 
