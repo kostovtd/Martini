@@ -129,6 +129,11 @@ public class Martini {
     }
 
 
+    public List<String> getGatewayList() {
+        return gatewayList;
+    }
+
+
     /**
      * Start a {@link android.content.BroadcastReceiver} for
      * listening for each incoming SMS.
