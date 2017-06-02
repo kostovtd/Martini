@@ -31,19 +31,19 @@ public class MartiniTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        PowerMockito.mockStatic(Log.class);
     }
 
 
     @Test
     public void obtainingMartiniInstanceWithContextShouldReturnSameInstance() {
-        PowerMockito.mockStatic(Log.class);
+
         Assert.assertSame(Martini.with(context), Martini.with(context));
     }
 
 
     @Test
     public void addingValidGatewayShouldIncludeNewGateway() {
-        PowerMockito.mockStatic(Log.class);
         Martini.with(context).clearGatewayList();
 
         int oldGatewayListSize = Martini.with(context).getGatewayList().size();
@@ -55,7 +55,6 @@ public class MartiniTest {
 
     @Test
     public void addingEmptyGatewayShouldNotIncludeNewGateway() {
-        PowerMockito.mockStatic(Log.class);
         Martini.with(context).clearGatewayList();
 
         int gatewayListSize = Martini.with(context).getGatewayList().size();
@@ -67,7 +66,6 @@ public class MartiniTest {
 
     @Test
     public void addingEmptyGatewayArrShouldNotIncludeNewGateways() {
-        PowerMockito.mockStatic(Log.class);
         Martini.with(context).clearGatewayList();
 
         String[] gatewaysArr = {};
@@ -80,7 +78,6 @@ public class MartiniTest {
 
     @Test
     public void addingValidGatewayArrShouldIncludeNewGateways() {
-        PowerMockito.mockStatic(Log.class);
         Martini.with(context).clearGatewayList();
 
         int oldGatewayListSize = Martini.with(context).getGatewayList().size();
@@ -93,7 +90,6 @@ public class MartiniTest {
 
     @Test
     public void addingEmptyGatewayArrayListShouldNowIncludeNewGateways() {
-        PowerMockito.mockStatic(Log.class);
         Martini.with(context).clearGatewayList();
 
         int oldGatewayListSize = Martini.with(context).getGatewayList().size();
@@ -107,7 +103,6 @@ public class MartiniTest {
 
     @Test
     public void addingValidGatewayArrayListShouldIncludeNewGateways() {
-        PowerMockito.mockStatic(Log.class);
         Martini.with(context).clearGatewayList();
 
         int oldGatewayListSize = Martini.with(context).getGatewayList().size();
