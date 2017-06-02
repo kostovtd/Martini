@@ -12,6 +12,8 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.shadows.ShadowLog;
 
 import java.util.ArrayList;
 
@@ -20,24 +22,26 @@ import java.util.ArrayList;
  * Created by kostovtd on 01.06.17.
  */
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Log.class})
+@RunWith(RobolectricTestRunner.class)
 public class MartiniTest {
 
     @Mock
     Context context;
 
 
+    static {
+        ShadowLog.stream = System.out;
+    }
+
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        PowerMockito.mockStatic(Log.class);
     }
 
 
     @Test
     public void obtainingMartiniInstanceWithContextShouldReturnSameInstance() {
-
         Assert.assertSame(Martini.with(context), Martini.with(context));
     }
 
