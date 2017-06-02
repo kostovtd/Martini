@@ -13,7 +13,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 /**
@@ -42,29 +42,83 @@ public class MartiniTest {
 
 
     @Test
-    public void addingEmptyGatewayIntoEmptyListShouldNotIncludeNewGateway() {
+    public void addingValidGatewayShouldIncludeNewGateway() {
         PowerMockito.mockStatic(Log.class);
-        Martini.with(context).addGateway("");
-        List<String> gatewayList = Martini.with(context).getGatewayList();
-        Assert.assertNull(gatewayList);
-    }
+        Martini.with(context).clearGatewayList();
 
-
-    @Test
-    public void addingValidGatewayIntoEmptyListShouldReturnNotNullList() {
-        PowerMockito.mockStatic(Log.class);
+        int oldGatewayListSize = Martini.with(context).getGatewayList().size();
         Martini.with(context).addGateway("1234");
-        Assert.assertNotNull(Martini.with(context).getGatewayList());
+
+        Assert.assertTrue(oldGatewayListSize < Martini.with(context).getGatewayList().size());
     }
 
 
     @Test
-    public void addingEmptyGatewayIntoFullListShouldNotIncludeNewGateway() {
+    public void addingEmptyGatewayShouldNotIncludeNewGateway() {
         PowerMockito.mockStatic(Log.class);
-        Martini.with(context).addGateway("12314");
-        int gateListSize = Martini.with(context).getGatewayList().size();
+        Martini.with(context).clearGatewayList();
+
+        int gatewayListSize = Martini.with(context).getGatewayList().size();
 
         Martini.with(context).addGateway("");
-        Assert.assertEquals(gateListSize, Martini.with(context).getGatewayList().size());
+        Assert.assertEquals(gatewayListSize, Martini.with(context).getGatewayList().size());
+    }
+
+
+    @Test
+    public void addingEmptyGatewayArrShouldNotIncludeNewGateways() {
+        PowerMockito.mockStatic(Log.class);
+        Martini.with(context).clearGatewayList();
+
+        String[] gatewaysArr = {};
+        int oldGatewayListSize = Martini.with(context).getGatewayList().size();
+
+        Martini.with(context).addGateways(gatewaysArr);
+        Assert.assertEquals(oldGatewayListSize, Martini.with(context).getGatewayList().size());
+    }
+
+
+    @Test
+    public void addingValidGatewayArrShouldIncludeNewGateways() {
+        PowerMockito.mockStatic(Log.class);
+        Martini.with(context).clearGatewayList();
+
+        int oldGatewayListSize = Martini.with(context).getGatewayList().size();
+        String[] gatewayArr = {"123", "432", "121212"};
+
+        Martini.with(context).addGateways(gatewayArr);
+        Assert.assertTrue(oldGatewayListSize < Martini.with(context).getGatewayList().size());
+    }
+
+
+    @Test
+    public void addingEmptyGatewayArrayListShouldNowIncludeNewGateways() {
+        PowerMockito.mockStatic(Log.class);
+        Martini.with(context).clearGatewayList();
+
+        int oldGatewayListSize = Martini.with(context).getGatewayList().size();
+
+        ArrayList<String> gatewayList = new ArrayList<>();
+        Martini.with(context).addGateways(gatewayList);
+
+        Assert.assertEquals(oldGatewayListSize, Martini.with(context).getGatewayList().size());
+    }
+
+
+    @Test
+    public void addingValidGatewayArrayListShouldIncludeNewGateways() {
+        PowerMockito.mockStatic(Log.class);
+        Martini.with(context).clearGatewayList();
+
+        int oldGatewayListSize = Martini.with(context).getGatewayList().size();
+
+        ArrayList<String> gatewayList = new ArrayList<>();
+        gatewayList.add("123");
+        gatewayList.add("321");
+        gatewayList.add("5435");
+
+        Martini.with(context).addGateways(gatewayList);
+
+        Assert.assertTrue(oldGatewayListSize < Martini.with(context).getGatewayList().size());
     }
 }

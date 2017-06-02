@@ -28,6 +28,7 @@ public class Martini {
 
     private Martini(Context context) {
         this.context = context;
+        this.gatewayList = new ArrayList<>();
     }
 
 
@@ -73,10 +74,6 @@ public class Martini {
             return singleton;
         }
 
-        if (gatewayList == null) {
-            gatewayList = new ArrayList<>();
-        }
-
         gatewayList.add(gateway);
         Log.i(TAG, "included gateway: " + gateway);
 
@@ -97,9 +94,6 @@ public class Martini {
             return singleton;
         }
 
-        if (gatewayList == null) {
-            gatewayList = new ArrayList<>();
-        }
 
         for (String gateway : gateways) {
             Log.i(TAG, "included gateway: " + gateway);
@@ -187,6 +181,16 @@ public class Martini {
 
         if(smsBroadcastReceiver != null) {
             context.unregisterReceiver(smsBroadcastReceiver);
+        }
+    }
+
+
+
+    public void clearGatewayList() {
+        Log.d(TAG, "clearGatewayList: hit");
+
+        if(gatewayList != null) {
+            gatewayList.clear();
         }
     }
 
