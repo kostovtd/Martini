@@ -1,17 +1,19 @@
 package com.kostovtd.martini;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -21,8 +23,9 @@ import java.util.ArrayList;
 @RunWith(RobolectricTestRunner.class)
 public class MartiniTest {
 
-    @Mock
-    Context context;
+    private static final String TAG = MartiniTest.class.getSimpleName();
+
+    private Context context;
 
 
     static {
@@ -32,18 +35,25 @@ public class MartiniTest {
 
     @Before
     public void setup() {
+        Log.d(TAG, "setup: hit");
+
         MockitoAnnotations.initMocks(this);
+        context = ShadowApplication.getInstance().getApplicationContext();
     }
 
 
     @Test
     public void obtainingMartiniInstanceWithContextShouldReturnSameInstance() {
+        Log.d(TAG, "obtainingMartiniInstanceWithContextShouldReturnSameInstance: hit");
+
         Assert.assertSame(Martini.with(context), Martini.with(context));
     }
 
 
     @Test
     public void addingValidGatewayShouldIncludeNewGateway() {
+        Log.d(TAG, "addingValidGatewayShouldIncludeNewGateway: hit");
+
         Martini.with(context).clearGatewayList();
 
         int oldGatewayListSize = Martini.with(context).getGatewayList().size();
@@ -55,6 +65,8 @@ public class MartiniTest {
 
     @Test
     public void addingEmptyGatewayShouldNotIncludeNewGateway() {
+        Log.d(TAG, "addingEmptyGatewayShouldNotIncludeNewGateway: hit");
+
         Martini.with(context).clearGatewayList();
 
         int gatewayListSize = Martini.with(context).getGatewayList().size();
@@ -66,6 +78,8 @@ public class MartiniTest {
 
     @Test
     public void addingEmptyGatewayArrShouldNotIncludeNewGateways() {
+        Log.d(TAG, "addingEmptyGatewayArrShouldNotIncludeNewGateways");
+
         Martini.with(context).clearGatewayList();
 
         String[] gatewaysArr = {};
@@ -78,6 +92,8 @@ public class MartiniTest {
 
     @Test
     public void addingValidGatewayArrShouldIncludeNewGateways() {
+        Log.d(TAG, "addingValidGatewayArrShouldIncludeNewGateways: hit");
+
         Martini.with(context).clearGatewayList();
 
         int oldGatewayListSize = Martini.with(context).getGatewayList().size();
@@ -90,6 +106,8 @@ public class MartiniTest {
 
     @Test
     public void addingEmptyGatewayArrayListShouldNowIncludeNewGateways() {
+        Log.d(TAG, "addingEmptyGatewayArrayListShouldNowIncludeNewGateways: hit");
+
         Martini.with(context).clearGatewayList();
 
         int oldGatewayListSize = Martini.with(context).getGatewayList().size();
@@ -103,6 +121,8 @@ public class MartiniTest {
 
     @Test
     public void addingValidGatewayArrayListShouldIncludeNewGateways() {
+        Log.d(TAG, "addingValidGatewayArrayListShouldIncludeNewGateways: hit");
+
         Martini.with(context).clearGatewayList();
 
         int oldGatewayListSize = Martini.with(context).getGatewayList().size();
@@ -115,5 +135,38 @@ public class MartiniTest {
         Martini.with(context).addGateways(gatewayList);
 
         Assert.assertTrue(oldGatewayListSize < Martini.with(context).getGatewayList().size());
+    }
+
+
+    @Test
+    public void testBroadcastReceiverRegistered() {
+        Log.d(TAG, "testBroadcastReceiverRegistered: hit");
+
+        // start and register our broadcast receiver
+        Martini.with(context).addGateway("123").start();
+
+        // get all registered receivers
+        List<ShadowApplication.Wrapper> registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
+
+        // test if the BroadcastReceiver was registered successfully
+        Assert.assertFalse(registeredReceivers.isEmpty());
+    }
+
+
+    @Test
+    public void testBroadcastReceiverUnregistered() {
+        Log.d(TAG, "testBroadcastReceiverUnregistered: hit");
+
+        // start and register our broadcast receiver
+        Martini.with(context).addGateway("123").start();
+
+        // stop and unregister our BroadcastReceiver
+        Martini.with(context).stop();
+
+        // get all registered receivers
+        List<ShadowApplication.Wrapper> registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
+
+        // test if the BroadcastReceiver was stopped successfully
+        Assert.assertTrue(registeredReceivers.isEmpty());
     }
 }

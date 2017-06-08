@@ -15,7 +15,7 @@ import java.util.List;
 public class Martini {
 
     private static final String TAG = Martini.class.getSimpleName();
-    private static final String BROADCAST = "android.provider.Telephony.SMS_RECEIVED";
+    public static final String BROADCAST = "android.provider.Telephony.SMS_RECEIVED";
 
 
     private static Martini singleton = null;

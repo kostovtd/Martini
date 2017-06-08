@@ -32,7 +32,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             if (bundle != null) {
                 final Object[] pdusObj = (Object[]) bundle.get(PDUS_KEY);
 
-                if(pdusObj != null) {
+                if (pdusObj != null) {
                     List<SmsMessage> smsMessageList = new ArrayList<>();
 
                     for (int i = 0; i < pdusObj.length; i++) {
@@ -40,7 +40,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                         smsMessageList.add(currentSms);
                     }
 
-                    if(broadcastListener != null) {
+                    if (broadcastListener != null) {
                         broadcastListener.onMessagesReceived(smsMessageList);
                     }
                 }
