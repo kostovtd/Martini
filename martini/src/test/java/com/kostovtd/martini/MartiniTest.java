@@ -1,7 +1,6 @@
 package com.kostovtd.martini;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,9 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 
