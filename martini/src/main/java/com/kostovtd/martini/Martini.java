@@ -21,6 +21,7 @@ public class Martini {
     private static Martini singleton = null;
     private final Context context;
     private SmsListener smsListener;
+    private PhoneCallListener phoneCallListener;
     private List<String> gatewayList;
     private SmsBroadcastReceiver smsBroadcastReceiver;
 
@@ -56,6 +57,17 @@ public class Martini {
         }
 
         this.smsListener = smsListener;
+
+        return singleton;
+    }
+
+
+    public Martini setPhoneCallListener(PhoneCallListener phoneCallListener) {
+        if(phoneCallListener == null) {
+            throw new IllegalArgumentException("phoneCallListener can not be NULL");
+        }
+
+        this.phoneCallListener = phoneCallListener;
 
         return singleton;
     }
