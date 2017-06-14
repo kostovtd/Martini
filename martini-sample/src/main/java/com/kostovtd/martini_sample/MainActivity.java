@@ -6,6 +6,7 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 
 import com.kostovtd.martini.Martini;
+import com.kostovtd.martini.PhoneCallListener;
 import com.kostovtd.martini.SmsListener;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,11 +19,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Martini.with(this)
-                .addGateway("123123")
-                .setSmsListener(new SmsListener() {
+                .setType(Martini.SMS_AND_PHONE_CALL_TYPE)
+                .setPhoneCallListener(new PhoneCallListener() {
                     @Override
-                    public void onSmsReceived(SmsMessage smsMessage) {
-                        Log.d(TAG, "onSmsReceived: " + smsMessage.getOriginatingAddress());
+                    public void onPhoneCallReceived(String phoneNumber) {
+                        Log.d(TAG, "onPhoneCallReceived: hit");
                     }
                 })
                 .start();
@@ -32,6 +33,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Martini.with(this).stop();
     }
 }

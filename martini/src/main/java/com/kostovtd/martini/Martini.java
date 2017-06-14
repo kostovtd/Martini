@@ -15,21 +15,30 @@ import java.util.List;
 public class Martini {
 
     private static final String TAG = Martini.class.getSimpleName();
-    public static final String BROADCAST = "android.provider.Telephony.SMS_RECEIVED";
+
+    public static final String RECEIVED_SMS_BROADCAST = "android.provider.Telephony.SMS_RECEIVED";
+    public static final String PHONE_STATE_BROADCAST = "android.intent.action.PHONE_STATE";
+    public static final int SMS_AND_PHONE_CALL_TYPE = 0;    // listen for both SMSs and phone calls
+    public static final int SMS_TYPE = 1;   // listen only for SMSs
+    public static final int PHONE_CALL_TYPE = 2;    // listen only for phone calls
 
 
     private static Martini singleton = null;
     private final Context context;
-    private SmsListener smsListener;
-    private PhoneCallListener phoneCallListener;
-    private List<String> gatewayList;
-    private SmsBroadcastReceiver smsBroadcastReceiver;
+    private int type;
 
+    private SmsListener smsListener;
+    private SmsBroadcastReceiver smsBroadcastReceiver;
+    private List<String> gatewayList;
+
+    private PhoneCallListener phoneCallListener;
+    private PhoneCallBroadcastReceiver phoneCallBroadcastReceiver;
 
 
     private Martini(Context context) {
         this.context = context;
         this.gatewayList = new ArrayList<>();
+        this.type = SMS_AND_PHONE_CALL_TYPE;    //by default both SMS and phone call authentication are enabled
     }
 
 
@@ -63,11 +72,39 @@ public class Martini {
 
 
     public Martini setPhoneCallListener(PhoneCallListener phoneCallListener) {
-        if(phoneCallListener == null) {
+        if (phoneCallListener == null) {
             throw new IllegalArgumentException("phoneCallListener can not be NULL");
         }
 
         this.phoneCallListener = phoneCallListener;
+
+        return singleton;
+    }
+
+
+    /**
+     * Set the type of authentication we should care about.
+     * If the given type does not mach any of the available types,
+     * then {@value SMS_AND_PHONE_CALL_TYPE} is used by default.
+     *
+     * @param type
+     * @return
+     */
+    public Martini setType(int type) {
+        switch (type) {
+            case SMS_AND_PHONE_CALL_TYPE:
+                this.type = SMS_AND_PHONE_CALL_TYPE;
+                break;
+            case SMS_TYPE:
+                this.type = SMS_TYPE;
+                break;
+            case PHONE_CALL_TYPE:
+                this.type = PHONE_CALL_TYPE;
+                break;
+            default:
+                this.type = SMS_AND_PHONE_CALL_TYPE;
+                break;
+        }
 
         return singleton;
     }
@@ -147,27 +184,69 @@ public class Martini {
     public void start() {
         Log.d(TAG, "start: hit");
 
-        if(smsBroadcastReceiver == null) {
+        switch (type) {
+            case SMS_AND_PHONE_CALL_TYPE:
+                startPhoneCallBroadcastReceiver();
+                startSmsBroadcastReceiver();
+                break;
+            case SMS_TYPE:
+                startSmsBroadcastReceiver();
+                break;
+            case PHONE_CALL_TYPE:
+                startPhoneCallBroadcastReceiver();
+                break;
+        }
+    }
+
+
+    /**
+     * Stop a previously started {@link android.content.BroadcastReceiver}
+     */
+    public void stop() {
+        Log.d(TAG, "stop: hit");
+
+        if (smsBroadcastReceiver != null) {
+            context.unregisterReceiver(smsBroadcastReceiver);
+        }
+    }
+
+
+    public void clearGatewayList() {
+        Log.d(TAG, "clearGatewayList: hit");
+
+        if (gatewayList != null) {
+            gatewayList.clear();
+        }
+    }
+
+
+    /**
+     * Start a {@link SmsBroadcastReceiver} and attach
+     * a listener for results.
+     */
+    private void startSmsBroadcastReceiver() {
+        Log.d(TAG, "startSmsBroadcastReceiver: hit");
+
+        if (smsBroadcastReceiver == null) {
             smsBroadcastReceiver = new SmsBroadcastReceiver();
         }
-
 
         smsBroadcastReceiver.setSmsBroadcastListener(new SmsBroadcastListener() {
             @Override
             public void onMessagesReceived(List<SmsMessage> smsMessageList) {
-                for(SmsMessage smsMessage : smsMessageList) {
+                for (SmsMessage smsMessage : smsMessageList) {
                     String smsNumber = smsMessage.getDisplayOriginatingAddress();
-                    if(!Is.empty(smsNumber)) {
+                    if (!Is.empty(smsNumber)) {
                         Log.d(TAG, "onMessagesReceived: " + smsNumber);
 
                         boolean isKnownGateway = isKnownGateway(smsNumber);
 
-                        if(!isKnownGateway) {
+                        if (!isKnownGateway) {
                             Log.i(TAG, "onMessagesReceived: not interesting number");
                             continue;
                         }
 
-                        if(smsListener == null) {
+                        if (smsListener == null) {
                             Log.i(TAG, "onMessagesReceived: smsListener is NULL");
                             continue;
                         }
@@ -179,44 +258,54 @@ public class Martini {
         });
 
 
-        IntentFilter intentFilter = new IntentFilter(BROADCAST);
+        IntentFilter intentFilter = new IntentFilter(RECEIVED_SMS_BROADCAST);
 
         context.registerReceiver(smsBroadcastReceiver, intentFilter);
     }
 
 
     /**
-     * Stop a previously started {@link android.content.BroadcastReceiver}
+     * Start a {@link PhoneCallBroadcastReceiver} and attach
+     * a listener for results.
      */
-    public void stop() {
-        Log.d(TAG, "stop: hit");
+    private void startPhoneCallBroadcastReceiver() {
+        Log.d(TAG, "startPhoneCallBroadcastReceiver: hit");
 
-        if(smsBroadcastReceiver != null) {
-            context.unregisterReceiver(smsBroadcastReceiver);
+        if (phoneCallBroadcastReceiver == null) {
+            phoneCallBroadcastReceiver = new PhoneCallBroadcastReceiver();
         }
-    }
 
+        phoneCallBroadcastReceiver.setPhoneCallBroadcastListener(new PhoneCallBroadcastListener() {
+            @Override
+            public void onCallReceived(String phoneNumber) {
+                Log.d(TAG, "onCallReceived: " + phoneNumber);
 
+                if (phoneCallListener == null) {
+                    Log.i(TAG, "onCallReceived: phoneCallListener is NULL");
+                    return;
+                }
 
-    public void clearGatewayList() {
-        Log.d(TAG, "clearGatewayList: hit");
+                phoneCallListener.onPhoneCallReceived(phoneNumber);
+            }
+        });
 
-        if(gatewayList != null) {
-            gatewayList.clear();
-        }
+        IntentFilter intentFilter = new IntentFilter(PHONE_STATE_BROADCAST);
+
+        context.registerReceiver(phoneCallBroadcastReceiver, intentFilter);
     }
 
 
     /**
      * Determine if the given number is part of the gateways
      * for which we care about.
+     *
      * @param smsNumber
      * @return TRUE if the number is part of important gateways of us.
      * FALSE otherwise.
      */
     private boolean isKnownGateway(String smsNumber) {
-        for(String gateway : gatewayList) {
-            if(gateway.trim().toLowerCase().equals(smsNumber.trim().toLowerCase())) {
+        for (String gateway : gatewayList) {
+            if (gateway.trim().toLowerCase().equals(smsNumber.trim().toLowerCase())) {
                 return true;
             }
         }

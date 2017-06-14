@@ -6,6 +6,6 @@ package com.kostovtd.martini;
 
 public interface PhoneCallListener {
 
-    void onPhoneCallReceived();
+    void onPhoneCallReceived(String phoneNumber);
 
 }
