@@ -208,6 +208,10 @@ public class Martini {
         if (smsBroadcastReceiver != null) {
             context.unregisterReceiver(smsBroadcastReceiver);
         }
+
+        if(phoneCallBroadcastReceiver != null) {
+            context.unregisterReceiver(phoneCallBroadcastReceiver);
+        }
     }
 
 
