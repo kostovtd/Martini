@@ -152,7 +152,7 @@ public class Martini {
         }
 
 
-        smsBroadcastReceiver.setBroadcastListener(new BroadcastListener() {
+        smsBroadcastReceiver.setSmsBroadcastListener(new SmsBroadcastListener() {
             @Override
             public void onMessagesReceived(List<SmsMessage> smsMessageList) {
                 for(SmsMessage smsMessage : smsMessageList) {

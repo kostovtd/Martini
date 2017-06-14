@@ -8,7 +8,7 @@ import java.util.List;
  * Created by kostovtd on 30.05.17.
  */
 
-public interface BroadcastListener {
+public interface SmsBroadcastListener {
 
     void onMessagesReceived(List<SmsMessage> smsMessageList);
 

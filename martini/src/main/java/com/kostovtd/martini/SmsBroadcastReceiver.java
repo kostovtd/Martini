@@ -19,7 +19,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = SmsBroadcastReceiver.class.getSimpleName();
     private static final String PDUS_KEY = "pdus";
 
-    private BroadcastListener broadcastListener;
+    private SmsBroadcastListener smsBroadcastListener;
 
 
     @Override
@@ -40,8 +40,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                         smsMessageList.add(currentSms);
                     }
 
-                    if (broadcastListener != null) {
-                        broadcastListener.onMessagesReceived(smsMessageList);
+                    if (smsBroadcastListener != null) {
+                        smsBroadcastListener.onMessagesReceived(smsMessageList);
                     }
                 }
             }
@@ -49,7 +49,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     }
 
 
-    public void setBroadcastListener(BroadcastListener broadcastListener) {
-        this.broadcastListener = broadcastListener;
+    public void setSmsBroadcastListener(SmsBroadcastListener smsBroadcastListener) {
+        this.smsBroadcastListener = smsBroadcastListener;
     }
 }
