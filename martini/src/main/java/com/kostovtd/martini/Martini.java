@@ -212,10 +212,12 @@ public class Martini {
 
         if (smsBroadcastReceiver != null) {
             context.unregisterReceiver(smsBroadcastReceiver);
+            smsBroadcastReceiver = null;
         }
 
         if(phoneCallBroadcastReceiver != null) {
             context.unregisterReceiver(phoneCallBroadcastReceiver);
+            phoneCallBroadcastReceiver = null;
         }
     }
 

@@ -16,6 +16,8 @@ import org.robolectric.shadows.ShadowLog;
 import java.util.ArrayList;
 import java.util.List;
 
+import dalvik.annotation.TestTargetClass;
+
 
 /**
  * Created by kostovtd on 01.06.17.
@@ -200,5 +202,58 @@ public class MartiniTest {
         Martini.with(context).setType(12345); // a random value
         int martiniType = Martini.with(context).getType();
         Assert.assertEquals(Martini.SMS_AND_PHONE_CALL_TYPE, martiniType);
+    }
+
+
+    @Test
+    public void testBroadcastReceiverStartedBasedOnValidMartiniType() {
+        Log.d(TAG, "testBroadcastReceiverStartedBasedOnCurrentMartiniType: hit");
+
+        // test PHONE_CALL_TYPE
+        Martini.with(context)
+                .setType(Martini.PHONE_CALL_TYPE)
+                .start();
+
+        // get all registered receivers
+        List<ShadowApplication.Wrapper> registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
+        Assert.assertEquals(1, registeredReceivers.size()); // only one receiver was registered
+        Assert.assertTrue(registeredReceivers.get(0).broadcastReceiver instanceof PhoneCallBroadcastReceiver);
+        Martini.with(context).stop();
+
+
+        // test SMS_TYPE
+        Martini.with(context)
+                .setType(Martini.SMS_TYPE)
+                .start();
+
+        // get all registered receivers
+        registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
+        Assert.assertEquals(1, registeredReceivers.size());
+        Assert.assertTrue(registeredReceivers.get(0).broadcastReceiver instanceof SmsBroadcastReceiver);
+        Martini.with(context).stop();
+
+
+        // test SMS_AND_PHONE_CALL_TYPE
+        Martini.with(context)
+                .setType(Martini.SMS_AND_PHONE_CALL_TYPE)
+                .start();
+        registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
+        Assert.assertEquals(2, registeredReceivers.size());
+        Martini.with(context).stop();
+    }
+
+
+    @Test
+    public void testBothBroadcastReceiversStartedBasedOnInvalidMartiniType() {
+        Log.d(TAG, "testBothBroadcastReceiversStartedBasedOnInvalidMartiniType: hit");
+
+        Martini.with(context)
+                .setType(12345) // a random value
+                .start();
+
+        // get all registered receivers
+        List<ShadowApplication.Wrapper> registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
+        Assert.assertEquals(2, registeredReceivers.size());
+        Martini.with(context).stop();
     }
 }
