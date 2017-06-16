@@ -184,7 +184,8 @@ public class Martini {
 
     /**
      * Start a {@link android.content.BroadcastReceiver} for
-     * listening for each incoming SMS.
+     * listening for each incoming SMS or Phone Call based on the
+     * current Martini type.
      */
     public void start() {
         Log.d(TAG, "start: hit");
@@ -205,7 +206,7 @@ public class Martini {
 
 
     /**
-     * Stop a previously started {@link android.content.BroadcastReceiver}
+     * Stop all previously started {@link android.content.BroadcastReceiver}
      */
     public void stop() {
         Log.d(TAG, "stop: hit");
