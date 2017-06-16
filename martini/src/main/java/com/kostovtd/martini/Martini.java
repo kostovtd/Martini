@@ -110,6 +110,11 @@ public class Martini {
     }
 
 
+    public int getType() {
+        return type;
+    }
+
+
     /**
      * Register a gateway for receiving messages from.
      *
