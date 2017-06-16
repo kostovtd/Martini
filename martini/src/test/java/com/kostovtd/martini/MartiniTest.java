@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.objectweb.asm.tree.MultiANewArrayInsnNode;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLog;
@@ -168,5 +169,36 @@ public class MartiniTest {
 
         // test if the BroadcastReceiver was stopped successfully
         Assert.assertTrue(registeredReceivers.isEmpty());
+    }
+
+
+    @Test
+    public void testMartiniTypeWithValidValueShouldChangeType() {
+        Log.d(TAG, "testMartiniTypeWithValidValueShouldChangeType: hit");
+
+        // test PHONE_CALL_TYPE
+        Martini.with(context).setType(Martini.PHONE_CALL_TYPE);
+        int martiniType = Martini.with(context).getType();
+        Assert.assertEquals(Martini.PHONE_CALL_TYPE, martiniType);
+
+        // test SMS_TYPE
+        Martini.with(context).setType(Martini.SMS_TYPE);
+        martiniType = Martini.with(context).getType();
+        Assert.assertEquals(Martini.SMS_TYPE, martiniType);
+
+        // test SMS_AND_PHONE_CALL_TYPE
+        Martini.with(context).setType(Martini.SMS_AND_PHONE_CALL_TYPE);
+        martiniType = Martini.with(context).getType();
+        Assert.assertEquals(Martini.SMS_AND_PHONE_CALL_TYPE, martiniType);
+    }
+
+
+    @Test
+    public void testMartiniTypeWithInvalidValueShouldSetTypeToSmsAndCall() {
+        Log.d(TAG, "testMartiniTypeWithInvalidValueShouldSetTypeToSmsAndCall: hit");
+
+        Martini.with(context).setType(12345); // a random value
+        int martiniType = Martini.with(context).getType();
+        Assert.assertEquals(Martini.SMS_AND_PHONE_CALL_TYPE, martiniType);
     }
 }
