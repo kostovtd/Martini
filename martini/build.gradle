@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 17
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -21,6 +21,31 @@ android {
     }
 }
 
+ext {
+    bintrayRepo = 'Martini'
+    bintrayName = 'Martini'
+
+    publishedGroupId = 'com.kostovtd'
+    libraryName = 'Martini'
+    artifact = 'Martini'
+
+    libraryDescription = 'A library which provides support for password-less authentication.'
+
+    siteUrl = 'https://github.com/todorBG/Martini'
+    gitUrl = 'https://github.com/todorBG/Martini'
+
+    libraryVersion = '0.2.0'
+
+    developerId = 'kostovtd'
+    developerName = 'Todor Kostov'
+    developerEmail = 'kostovtd@gmail.com'
+
+    licenseName = 'The MIT License (MIT)'
+    licenseUrl = 'https://opensource.org/licenses/MIT'
+    allLicenses = ["MIT"]
+}
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -31,3 +56,5 @@ dependencies {
     testCompile "org.mockito:mockito-core:2.+"
     testCompile "org.robolectric:robolectric:3.3.2"
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
